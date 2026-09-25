@@ -4,8 +4,7 @@ import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   return (
-    <div className="navbar bg-base-100 shadow-sm px-2 sm:px-4">
-      {/* Navbar Start: Logo & Mobile Hamburger Menu */}
+    <div className="navbar sticky top-0 z-50 bg-base-100 border-b border-gray-800/80 shadow-sm h-16 max-w-7xl mx-auto px-2 sm:px-4">
       <div className="navbar-start flex items-center gap-1 sm:gap-2">
         {/* Mobile Dropdown */}
         <div className="dropdown">
