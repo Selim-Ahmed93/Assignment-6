@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { WorkoutItem } from '@/types/workout';
 
 interface PlanContextType {
@@ -19,6 +19,7 @@ export const PlanProvider = ({ children }: { children: React.ReactNode }) => {
   const [planList, setPlanList] = useState<WorkoutItem[]>([]);
   const [savedList, setSavedList] = useState<WorkoutItem[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 1. LocalStorage theke data load kora (Safe Try-Catch)
   useEffect(() => {
@@ -28,7 +29,7 @@ export const PlanProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (savedPlan) {
         const parsedPlan = JSON.parse(savedPlan) as WorkoutItem[];
-        if (Array.isArray(parsedPlan))setPlanList(parsedPlan);
+        if (Array.isArray(parsedPlan)) setPlanList(parsedPlan);
       }
 
       if (savedSaved) {
@@ -40,54 +41,63 @@ export const PlanProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // Toast message auto hide kora
+  // Toast message auto hide kora (Timer Cleanup)
   const showToast = (msg: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setToastMessage(msg);
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setToastMessage(null);
     }, 3000);
   };
 
-  // 2. Add to Today's Plan logic
+  // 2. Add to Today's Plan logic (Functional Update)
   const addToPlan = (item: WorkoutItem) => {
-    const isExist = planList.some((p) => String(p.id) === String(item.id));
-    if (isExist) {
-      showToast(`"${item.title || 'Workout'}" is already in today's plan!`);
-      return;
-    }
-    const updated = [...planList, item];
-    setPlanList(updated);
-    localStorage.setItem('fitlog_plan', JSON.stringify(updated));
-    showToast(`Added "${item.title || 'Workout'}" to today's plan!`);
+    setPlanList((prev) => {
+      const isExist = prev.some((p) => String(p.id) === String(item.id));
+      if (isExist) {
+        showToast(`"${item.title || 'Workout'}" is already in today's plan!`);
+        return prev;
+      }
+      const updated = [...prev, item];
+      localStorage.setItem('fitlog_plan', JSON.stringify(updated));
+      showToast(`Added "${item.title || 'Workout'}" to today's plan!`);
+      return updated;
+    });
   };
 
-  // 3. Add to Save for later logic
+  // 3. Add to Save for later logic (Functional Update)
   const addToSaved = (item: WorkoutItem) => {
-    const isExist = savedList.some((s) => String(s.id) === String(item.id));
-    if (isExist) {
-      showToast(`"${item.title || 'Workout'}" is already saved!`);
-      return;
-    }
-    const updated = [...savedList, item];
-    setSavedList(updated);
-    localStorage.setItem('fitlog_saved', JSON.stringify(updated));
-    showToast(`Saved "${item.title || 'Workout'}" for later!`);
+    setSavedList((prev) => {
+      const isExist = prev.some((s) => String(s.id) === String(item.id));
+      if (isExist) {
+        showToast(`"${item.title || 'Workout'}" is already saved!`);
+        return prev;
+      }
+      const updated = [...prev, item];
+      localStorage.setItem('fitlog_saved', JSON.stringify(updated));
+      showToast(`Saved "${item.title || 'Workout'}" for later!`);
+      return updated;
+    });
   };
 
   // 4. Remove from Plan logic
   const removeFromPlan = (id: string | number) => {
-    const updated = planList.filter((item) => String(item.id) !== String(id));
-    setPlanList(updated);
-    localStorage.setItem('fitlog_plan', JSON.stringify(updated));
-    showToast('Removed workout from plan');
+    setPlanList((prev) => {
+      const updated = prev.filter((item) => String(item.id) !== String(id));
+      localStorage.setItem('fitlog_plan', JSON.stringify(updated));
+      showToast('Removed workout from plan');
+      return updated;
+    });
   };
 
   // 5. Remove from Saved logic
   const removeFromSaved = (id: string | number) => {
-    const updated = savedList.filter((item) => String(item.id) !== String(id));
-    setSavedList(updated);
-    localStorage.setItem('fitlog_saved', JSON.stringify(updated));
-    showToast('Removed workout from saved list');
+    setSavedList((prev) => {
+      const updated = prev.filter((item) => String(item.id) !== String(id));
+      localStorage.setItem('fitlog_saved', JSON.stringify(updated));
+      showToast('Removed workout from saved list');
+      return updated;
+    });
   };
 
   return (

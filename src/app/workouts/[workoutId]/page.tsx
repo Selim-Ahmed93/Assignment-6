@@ -4,11 +4,16 @@ import Image from 'next/image';
 import { WorkoutItem } from '@/types/workout';
 import ActionButtons from '@/components/ActionButtons';
 
-// Single workout API fetch function
+// Single workout API fetch function with Local Fallback Strategy
 const getSingleWorkout = async (workoutId: string): Promise<WorkoutItem | null> => {
   try {
+    // 1. Try fetching directly from single workout API
     const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${workoutId}`, {
       cache: 'no-store',
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
     });
 
     if (res.ok) {
@@ -16,15 +21,39 @@ const getSingleWorkout = async (workoutId: string): Promise<WorkoutItem | null> 
       if (data && !Array.isArray(data)) return data as WorkoutItem;
     }
 
-    // Fallback: Main API theke find korbe
-    const allRes = await fetch('https://api.abcz.workers.dev/api/fitlog', { cache: 'no-store' });
-    if (!allRes.ok) return null;
+    // 2. Try fetching from main API list
+    const allRes = await fetch('https://api.abcz.workers.dev/api/fitlog', {
+      cache: 'no-store',
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+    });
 
-    const allData = await allRes.json();
-    const list: WorkoutItem[] = Array.isArray(allData) ? allData : allData?.workouts || [];
-    return list.find((item: WorkoutItem) => String(item.id) === String(workoutId)) || null;
+    if (allRes.ok) {
+      const allData = await allRes.json();
+      const list: WorkoutItem[] = Array.isArray(allData) ? allData : allData?.workouts || [];
+      const found = list.find((item: WorkoutItem) => String(item.id) === String(workoutId));
+      if (found) return found;
+    }
+
+    throw new Error('API Rate Limited / Down');
   } catch (error) {
-    console.log('Error fetching single workout:', error);
+    console.log('Error fetching from primary API, using local fallback:', error);
+    
+    // 3. Fallback to public/data.json when Cloudflare API is rate limited
+    try {
+      // In Server Components, fetch local public files via relative URL or process.env URL
+      const host = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+      const localRes = await fetch(`${host}/data.json`, { cache: 'no-store' });
+      if (localRes.ok) {
+        const localData: WorkoutItem[] = await localRes.json();
+        return localData.find((item) => String(item.id) === String(workoutId)) || null;
+      }
+    } catch (fallbackError) {
+      console.error('Failed to load local JSON fallback:', fallbackError);
+    }
+
     return null;
   }
 };

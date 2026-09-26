@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "title": "BARBELL BENCH PRESS",
+    "equipment": "Barbell / Flat Bench",
+    "time": "45 min",
+    "calories": "320 kcal",
+    "rating": "4.9",
+    "tags": ["CHEST", "STRENGTH"],
+    "image": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&auto=format&fit=crop&q=80",
+    "description": "The foundational compound chest exercise for overall upper body pressing strength."
+  },
+  {
+    "id": 2,
+    "title": "INCLINE DUMBBELL PRESS",
+    "equipment": "Dumbbells / Incline Bench",
+    "time": "40 min",
+    "calories": "280 kcal",
+    "rating": "4.8",
+    "tags": ["CHEST", "HYPERTROPHY"],
+    "image": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80",
+    "description": "Targets the clavicular head (upper chest) while allowing a natural wrist angle."
+  },
+  {
+    "id": 3,
+    "title": "CABLE CHEST FLYES",
+    "equipment": "Dual Cable Machine",
+    "time": "30 min",
+    "calories": "210 kcal",
+    "rating": "4.7",
+    "tags": ["CHEST", "ISOLATION"],
+    "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80",
+    "description": "Provides continuous tension across the chest through the full range of motion."
+  },
+  {
+    "id": 4,
+    "title": "BARBELL BACK SQUAT",
+    "equipment": "Barbell / Squat Rack",
+    "time": "50 min",
+    "calories": "450 kcal",
+    "rating": "5.0",
+    "tags": ["LEGS", "COMPOUND"],
+    "image": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80",
+    "description": "The king of lower body movements building quadriceps, glutes, and core stability."
+  },
+  {
+    "id": 5,
+    "title": "ROMANIAN DEADLIFT",
+    "equipment": "Barbell / Plates",
+    "time": "35 min",
+    "calories": "310 kcal",
+    "rating": "4.9",
+    "tags": ["HAMSTRINGS", "POSTERIOR"],
+    "image": "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=800&auto=format&fit=crop&q=80",
+    "description": "Hinge-focused movement targeting hamstrings and glutes through eccentric stretch."
+  },
+  {
+    "id": 6,
+    "title": "STANDING OVERHEAD PRESS",
+    "equipment": "Barbell",
+    "time": "35 min",
+    "calories": "260 kcal",
+    "rating": "4.8",
+    "tags": ["SHOULDERS", "STRENGTH"],
+    "image": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&auto=format&fit=crop&q=80",
+    "description": "Full overhead vertical pressing for shoulder mass and core stability."
+  }
+]
