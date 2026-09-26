@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // All remote image hostnames allow korar jonno
+      },
+    ],
+  },
 };
 
 export default nextConfig;
