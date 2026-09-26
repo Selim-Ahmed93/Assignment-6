@@ -28,7 +28,7 @@ export const PlanProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (savedPlan) {
         const parsedPlan = JSON.parse(savedPlan) as WorkoutItem[];
-        if (Array.isArray(parsedPlan)) setPlanList(parsedPlan);
+        if (Array.isArray(parsedPlan))setPlanList(parsedPlan);
       }
 
       if (savedSaved) {
