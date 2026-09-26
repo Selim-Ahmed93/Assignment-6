@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏋️‍♂️ FitLog — Workout Library App
 
-## Getting Started
+**FitLog** is a modern, responsive web application designed for fitness enthusiasts to explore workout routines, track daily training sessions, and build custom workout plans. Built with Next.js (App Router), TypeScript, and Tailwind CSS.
 
-First, run the development server:
+> *"Train hard, log honest."*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Live Demo & API
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Live Site**: [Insert Your Vercel / Live Link Here]
+- **API Endpoint**: `https://api.abcz.workers.dev/api/fitlog`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ✨ Key Features
 
-To learn more about Next.js, take a look at the following resources:
+- 📱 **Responsive Navigation Bar**: Includes a mobile dropdown menu, smooth navigation links, and dynamic live counters for planned and saved workouts.
+- 🏋️ **The Library**: Displays a grid of workout routines fetched from an external API with tags, equipment, duration, calorie burn, and ratings.
+- 🔍 **Dynamic Workout Details Page (`/workouts/[workoutId]`)**:
+  - Two-column layout with high-resolution visual previews.
+  - Comprehensive metadata (Equipment, Difficulty, Sets & Reps, Duration, Calories, Rating).
+  - Step-by-step workout execution instructions.
+  - Interactive **"Add to today's plan"** and **"Save for later"** actions.
+- 📋 **Interactive "My Plan" Dashboard (`/my-plan`)**:
+  - **Live Metrics Calculation**: Real-time aggregation of total exercises, estimated workout time (min), estimated calorie burn (kcal), and completion progress.
+  - **Progress Tracking**: Toggle exercises as "Mark as Done" or "Undo".
+  - **Manage Plan**: Easily remove items from today's plan.
+  - **Empty State UI**: Clean call-to-action when no workouts are added.
+- 🔔 **Toast Notifications**: Interactive floating feedback when items are added or modified.
+- 💾 **Persistent State**: State management powered by React Context API and synchronized with `localStorage` so data stays saved across page reloads.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Tech Stack
 
-## Deploy on Vercel
+- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [DaisyUI](https://daisyui.com/)
+- **State Management**: React Context API (`PlanContext`)
+- **Icons & UI**: Heroicons / Inline SVG
+- **Deployment**: [Vercel](https://vercel.com/)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 Project Folder Structure
+
+```text
+src/
+├── app/
+│   ├── layout.tsx                # Root layout with PlanProvider
+│   ├── page.tsx                  # Home page (Banner + Library)
+│   ├── my-plan/
+│   │   └── page.tsx              # My Plan dashboard
+│   └── workouts/
+│       └── [workoutId]/
+│           └── page.tsx          # Dynamic workout details page
+├── components/
+│   ├── ActionButtons.tsx         # Client component for adding workouts
+│   ├── homepage/
+│   │   ├── Banner.tsx            # Hero banner section
+│   │   └── LibraryPage.tsx       # Workout library grid
+│   └── share/
+│       ├── navbar.tsx            # Navigation header with live counts
+│       └── footer.tsx            # Footer component
+├── context/
+│   └── PlanContext.tsx           # Context provider for Plan & Saved items
+└── types/
+    └── workout.ts                # TypeScript interfaces for workout data
