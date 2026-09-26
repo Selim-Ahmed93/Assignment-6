@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import logo from "@/assets/logo.png";
 
 const Navbar = () => {
@@ -36,16 +37,20 @@ const Navbar = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow border border-gray-800"
           >
             <li>
-              <a className="hover:text-yellow-300">Works</a>
+              <Link href="/#library" className="hover:text-yellow-300">
+                Workout
+              </Link>
             </li>
             <li>
-              <a className="hover:text-yellow-300">My plan</a>
+              <Link href="/my-plan" className="hover:text-yellow-300">
+                My Plan
+              </Link>
             </li>
           </ul>
         </div>
 
-        {/* Brand Logo */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer">
+        {/* Brand Logo - Click korle Home page-e jabe */}
+        <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer">
           <Image
             src={logo}
             alt="FitLog Logo"
@@ -57,36 +62,45 @@ const Navbar = () => {
           <span className="text-xl sm:text-2xl font-black tracking-wider text-white uppercase font-sans">
             FitLog
           </span>
-        </div>
+        </Link>
       </div>
 
+      {/* Desktop Menu Links */}
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 gap-2 font-medium">
           <li>
-            <a className="hover:text-yellow-300 transition-colors">Works</a>
+            <Link href="/#library" className="hover:text-yellow-300 transition-colors">
+              Workout
+            </Link>
           </li>
           <li>
-            <a className="hover:text-yellow-300 transition-colors">My plan</a>
+            <Link href="/my-plan" className="hover:text-yellow-300 transition-colors">
+              My Plan
+            </Link>
           </li>
         </ul>
       </div>
 
+      {/* Badges Section - Link to /my-plan */}
       <div className="navbar-end flex items-center gap-2 sm:gap-3">
-        <div className="flex items-center gap-2.5 sm:gap-4 bg-[#0d0f12] px-2.5 sm:px-3 py-1.5 rounded-lg text-white">
-          <button className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium hover:opacity-80 transition-opacity">
+        <Link
+          href="/my-plan"
+          className="flex items-center gap-2.5 sm:gap-4 bg-[#0d0f12] px-2.5 sm:px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-opacity"
+        >
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
             <span>Plan</span>
             <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#ccff00] text-black text-[10px] sm:text-xs font-bold">
               0
             </span>
-          </button>
+          </div>
 
-          <button className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-300 hover:opacity-80 transition-opacity">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-300">
             <span>Saved</span>
             <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full border border-[#2a2f3a] text-[10px] sm:text-xs font-medium text-gray-300">
               0
             </span>
-          </button>
-        </div>
+          </div>
+        </Link>
       </div>
     </div>
   );

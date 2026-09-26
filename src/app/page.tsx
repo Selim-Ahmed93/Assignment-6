@@ -1,13 +1,18 @@
-import Banner from '@/components/homepage/banner';
-import LibraryPage from '@/components/homepage/library';
 import React from 'react';
+import Banner from '@/components/homepage/banner';
+// import LibraryPage from '@/components/homepage/library';
+// import LibraryPage from '@/components/homepage/library';
+import LibraryPage from '@/components/homepage/library';
 
 const page = () => {
   return (
-    <div>
+
+  <main>
       <Banner />
-      <LibraryPage />
-    </div>
+      <div id="library">
+        <LibraryPage />
+      </div>
+    </main>
   );
 };
 

@@ -7,4 +7,10 @@ export interface WorkoutItem {
   time?: string;
   calories?: string;
   rating?: number | string;
+  // Extra fields for Details page
+  description?: string;
+  difficulty?: string;
+  sets?: string | number;
+  reps?: string;
+  instructions?: string[];
 }
