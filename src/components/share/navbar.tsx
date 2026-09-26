@@ -1,9 +1,14 @@
+'use client';
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/logo.png";
+import { usePlan } from "@/context/PlanContext";
 
 const Navbar = () => {
+  const { planList, savedList } = usePlan();
+
   return (
     <div className="navbar sticky top-0 z-50 bg-base-100 border-b border-gray-800/80 shadow-sm h-16 max-w-7xl mx-auto px-2 sm:px-4">
       <div className="navbar-start flex items-center gap-1 sm:gap-2">
@@ -49,7 +54,7 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* Brand Logo - Click korle Home page-e jabe */}
+        {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer">
           <Image
             src={logo}
@@ -81,7 +86,7 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Badges Section - Link to /my-plan */}
+      {/* Badges Section with Dynamic Counts */}
       <div className="navbar-end flex items-center gap-2 sm:gap-3">
         <Link
           href="/my-plan"
@@ -90,14 +95,14 @@ const Navbar = () => {
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
             <span>Plan</span>
             <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#ccff00] text-black text-[10px] sm:text-xs font-bold">
-              0
+              {planList.length}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-300">
             <span>Saved</span>
             <span className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full border border-[#2a2f3a] text-[10px] sm:text-xs font-medium text-gray-300">
-              0
+              {savedList.length}
             </span>
           </div>
         </Link>
