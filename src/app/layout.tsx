@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/share/navbar";
-import { PlanProvider } from "@/context/PlanContext"; // 1. PlanProvider import kora hoyeche
+import Footer from "@/components/share/footer"; 
+import { PlanProvider } from "@/context/PlanContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,10 +32,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* 2. PlanProvider দিয়ে Navbar ও children wrap করা হয়েছে */}
         <PlanProvider>
           <Navbar />
-          {children}
+          <main className="flex-1">{children}</main>
+          <Footer /> 
         </PlanProvider>
       </body>
     </html>
