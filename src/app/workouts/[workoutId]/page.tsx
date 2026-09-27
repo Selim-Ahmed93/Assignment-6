@@ -4,29 +4,37 @@ import Image from 'next/image';
 import { WorkoutItem } from '@/types/workout';
 import ActionButtons from '@/components/ActionButtons';
 
-// Single workout fetch function using the new API
+// Smart fetch function supporting both ID endpoint and fallback filtering from all data
 const getSingleWorkout = async (workoutId: string): Promise<WorkoutItem | null> => {
   try {
-    // 1. Fetch single item using the specific ID API endpoint
+    // 1. Try fetching from the single data alternative API endpoint first
     const res = await fetch(`https://api.api-store.workers.dev/api/fitlog/${workoutId}`, {
       cache: 'no-store',
     });
 
     if (res.ok) {
       const data = await res.json();
-      if (data && !Array.isArray(data)) return data as WorkoutItem;
+      if (data && !Array.isArray(data)) {
+        return data as WorkoutItem;
+      }
     }
 
-    // 2. Fallback: fetch list and find by ID if direct single endpoint fails
+    // 2. Fallback: Fetch all data and match by id (handles string/number mismatch or alternative formats)
     const allRes = await fetch('https://api.api-store.workers.dev/api/fitlog', { cache: 'no-store' });
     if (allRes.ok) {
       const allData = await allRes.json();
       const list: WorkoutItem[] = Array.isArray(allData) ? allData : allData?.workouts || [];
-      const found = list.find((item: WorkoutItem) => String(item.id) === String(workoutId));
+      
+      const found = list.find(
+        (item: WorkoutItem) => 
+          String(item.id) === String(workoutId) || 
+          String((item as { _id?: unknown })._id) === String(workoutId)
+      );
+      
       if (found) return found;
     }
   } catch (error) {
-    console.error('Error fetching single workout from API:', error);
+    console.error('Error fetching single workout:', error);
   }
 
   return null;
@@ -43,13 +51,14 @@ const WorkoutDetailsPage = async ({ params }: Props) => {
   // If workout data is not found
   if (!workout) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-white p-4">
-        <h2 className="text-2xl font-bold mb-4">Workout Not Found!</h2>
+      <div className="min-h-screen bg-[#0b0d12] flex flex-col items-center justify-center text-white p-4">
+        <h2 className="text-2xl font-bold mb-4 text-red-400">Workout Not Found!</h2>
+        <p className="text-gray-400 text-xs mb-6">The workout you are looking for might have been removed or the ID is invalid.</p>
         <Link
           href="/"
-          className="bg-[#ccff00] text-black font-bold px-6 py-2.5 rounded-full uppercase text-xs"
+          className="bg-[#ccff00] text-black font-black px-6 py-2.5 rounded-full uppercase text-xs tracking-wider"
         >
-          Back to Library
+          ← Back to Library
         </Link>
       </div>
     );
@@ -63,12 +72,12 @@ const WorkoutDetailsPage = async ({ params }: Props) => {
   ];
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-8 sm:py-12">
+    <section className="min-h-screen bg-[#0b0d12] text-white w-full max-w-7xl mx-auto px-4 py-8 sm:py-12">
       {/* Back Button */}
       <div className="mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white text-xs uppercase tracking-wider font-bold transition-colors"
+          className="inline-flex items-center gap-2 text-gray-400 hover:text-[#ccff00] text-xs uppercase tracking-wider font-bold transition-colors"
         >
           ← Back to Library
         </Link>
@@ -112,7 +121,7 @@ const WorkoutDetailsPage = async ({ params }: Props) => {
 
             <p className="text-gray-400 text-sm sm:text-base mt-2 leading-relaxed">
               {workout.description ||
-                'A compound press that builds chest thickness, triceps, and pressing power from a stable bench.'}
+                'A professional strength training exercise designed to build muscle mass and endurance.'}
             </p>
           </div>
 
@@ -152,7 +161,7 @@ const WorkoutDetailsPage = async ({ params }: Props) => {
               INSTRUCTIONS
             </h3>
             <ol className="space-y-3">
-              {defaultInstructions.parse ? defaultInstructions : defaultInstructions.map((step: string, index: number) => (
+              {defaultInstructions.map((step: string, index: number) => (
                 <li key={index} className="flex items-start gap-3 text-xs text-gray-300">
                   <span className="flex items-center justify-center bg-[#ccff00] text-black font-black w-5 h-5 rounded-full text-[10px] shrink-0 mt-0.5">
                     {index + 1}
