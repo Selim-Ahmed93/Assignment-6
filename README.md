@@ -8,7 +8,7 @@
 
 ## 🚀 Live Demo & API
 
-- **Live Site**: [Insert Your Vercel / Live Link Here]
+- **Live Site**: https://fitlog-app-two.vercel.app/
 - **API Endpoint**: `https://api.abcz.workers.dev/api/fitlog`
 
 ---
