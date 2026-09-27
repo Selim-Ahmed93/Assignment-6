@@ -4,135 +4,11 @@ import Image from 'next/image';
 import { WorkoutItem } from '@/types/workout';
 import ActionButtons from '@/components/ActionButtons';
 
-// Local fallback workout list (Ensures 100% reliable loading without network fetch issues)
-const fallbackWorkouts: WorkoutItem[] = [
-  {
-    id: 1,
-    title: 'BARBELL BENCH PRESS',
-    equipment: 'Barbell / Flat Bench',
-    time: '45 min',
-    calories: '320 kcal',
-    rating: '4.9',
-    tags: ['CHEST', 'STRENGTH'],
-    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&auto=format&fit=crop&q=80',
-    description: 'The foundational compound chest exercise for overall upper body pressing strength.',
-    difficulty: 'Intermediate',
-    sets: 4,
-    reps: '6-8',
-    instructions: [
-      'Position yourself comfortably on the bench with feet flat on the floor.',
-      'Grip the barbell slightly wider than shoulder-width apart.',
-      'Unrack the bar and lower it with control to your mid-chest.',
-      'Press the bar explosively back up to the starting position.'
-    ]
-  },
-  {
-    id: 2,
-    title: 'INCLINE DUMBBELL PRESS',
-    equipment: 'Dumbbells / Incline Bench',
-    time: '40 min',
-    calories: '280 kcal',
-    rating: '4.8',
-    tags: ['CHEST', 'HYPERTROPHY'],
-    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
-    description: 'Targets the clavicular head (upper chest) while allowing a natural wrist angle.',
-    difficulty: 'Intermediate',
-    sets: 3,
-    reps: '8-10',
-    instructions: [
-      'Set an adjustable bench to a 30-45 degree incline.',
-      'Hold dumbbells at shoulder level with palms facing forward.',
-      'Press the dumbbells up and slightly inward until arms are extended.',
-      'Lower slowly with control feeling the stretch in upper chest.'
-    ]
-  },
-  {
-    id: 3,
-    title: 'CABLE CHEST FLYES',
-    equipment: 'Dual Cable Machine',
-    time: '30 min',
-    calories: '210 kcal',
-    rating: '4.7',
-    tags: ['CHEST', 'ISOLATION'],
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
-    description: 'Provides continuous tension across the chest through the full range of motion.',
-    difficulty: 'Beginner',
-    sets: 3,
-    reps: '12-15',
-    instructions: [
-      'Set pulleys to shoulder height or slightly higher.',
-      'Step forward with a slight lean and slight bend in your elbows.',
-      'Bring handles together in a hugging motion in front of your chest.',
-      'Return slowly to the starting position.'
-    ]
-  },
-  {
-    id: 4,
-    title: 'BARBELL BACK SQUAT',
-    equipment: 'Barbell / Squat Rack',
-    time: '50 min',
-    calories: '450 kcal',
-    rating: '5.0',
-    tags: ['LEGS', 'COMPOUND'],
-    image: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
-    description: 'The king of lower body movements building quadriceps, glutes, and core stability.',
-    difficulty: 'Advanced',
-    sets: 5,
-    reps: '5',
-    instructions: [
-      'Rest the barbell across your upper back (traps).',
-      'Unrack the bar, step back, and set your feet shoulder-width apart.',
-      'Lower your hips back and down until thighs are parallel to the floor.',
-      'Drive through your heels to return to standing.'
-    ]
-  },
-  {
-    id: 5,
-    title: 'ROMANIAN DEADLIFT',
-    equipment: 'Barbell / Plates',
-    time: '35 min',
-    calories: '310 kcal',
-    rating: '4.9',
-    tags: ['HAMSTRINGS', 'POSTERIOR'],
-    image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=800&auto=format&fit=crop&q=80',
-    description: 'Hinge-focused movement targeting hamstrings and glutes through eccentric stretch.',
-    difficulty: 'Intermediate',
-    sets: 4,
-    reps: '8-10',
-    instructions: [
-      'Hold the barbell with an overhand grip in front of your thighs.',
-      'Keep a slight bend in your knees and push your hips back.',
-      'Lower the bar along your shins until you feel a deep stretch in hamstrings.',
-      'Drive your hips forward to return to the starting position.'
-    ]
-  },
-  {
-    id: 6,
-    title: 'STANDING OVERHEAD PRESS',
-    equipment: 'Barbell',
-    time: '35 min',
-    calories: '260 kcal',
-    rating: '4.8',
-    tags: ['SHOULDERS', 'STRENGTH'],
-    image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&auto=format&fit=crop&q=80',
-    description: 'Full overhead vertical pressing for shoulder mass and core stability.',
-    difficulty: 'Intermediate',
-    sets: 4,
-    reps: '6-8',
-    instructions: [
-      'Hold the bar at shoulder height with hands shoulder-width apart.',
-      'Brace your core and squeeze your glutes for stability.',
-      'Press the bar straight up overhead, moving your head slightly back.',
-      'Lock out arms at the top and lower back down smoothly.'
-    ]
-  }
-];
-
-// Single workout fetch function with API primary & direct local fallback array
+// Single workout fetch function using the new API
 const getSingleWorkout = async (workoutId: string): Promise<WorkoutItem | null> => {
   try {
-    // 1. Try Live API First
-    const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${workoutId}`, {
+    // 1. Fetch single item using the specific ID API endpoint
+    const res = await fetch(`https://api.api-store.workers.dev/api/fitlog/${workoutId}`, {
       cache: 'no-store',
     });
 
@@ -141,7 +17,8 @@ const getSingleWorkout = async (workoutId: string): Promise<WorkoutItem | null> 
       if (data && !Array.isArray(data)) return data as WorkoutItem;
     }
 
-    const allRes = await fetch('https://api.abcz.workers.dev/api/fitlog', { cache: 'no-store' });
+    // 2. Fallback: fetch list and find by ID if direct single endpoint fails
+    const allRes = await fetch('https://api.api-store.workers.dev/api/fitlog', { cache: 'no-store' });
     if (allRes.ok) {
       const allData = await allRes.json();
       const list: WorkoutItem[] = Array.isArray(allData) ? allData : allData?.workouts || [];
@@ -149,11 +26,10 @@ const getSingleWorkout = async (workoutId: string): Promise<WorkoutItem | null> 
       if (found) return found;
     }
   } catch (error) {
-    console.log('API unreachable, using bulletproof local array fallback');
+    console.error('Error fetching single workout from API:', error);
   }
 
-  // 2. Instant Local Fallback (No network dependency)
-  return fallbackWorkouts.find((item) => String(item.id) === String(workoutId)) || null;
+  return null;
 };
 
 type Props = {
@@ -164,7 +40,7 @@ const WorkoutDetailsPage = async ({ params }: Props) => {
   const { workoutId } = await params;
   const workout = await getSingleWorkout(workoutId);
 
-  // Data na paowa gele Fallback UI
+  // If workout data is not found
   if (!workout) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-white p-4">
@@ -276,7 +152,7 @@ const WorkoutDetailsPage = async ({ params }: Props) => {
               INSTRUCTIONS
             </h3>
             <ol className="space-y-3">
-              {defaultInstructions.map((step: string, index: number) => (
+              {defaultInstructions.parse ? defaultInstructions : defaultInstructions.map((step: string, index: number) => (
                 <li key={index} className="flex items-start gap-3 text-xs text-gray-300">
                   <span className="flex items-center justify-center bg-[#ccff00] text-black font-black w-5 h-5 rounded-full text-[10px] shrink-0 mt-0.5">
                     {index + 1}

@@ -1,137 +1,110 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { WorkoutItem } from '@/types/workout';
 
-const LibraryPage = () => {
-  const [data, setData] = useState<WorkoutItem[]>([]);
-  const [loading, setLoading] = useState(true);
+// Fetch workouts directly from the API
+const getWorkouts = async (): Promise<WorkoutItem[]> => {
+  try {
+    const res = await fetch('https://api.api-store.workers.dev/api/fitlog', {
+      cache: 'no-store',
+    });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // 1. Primary Attempt: Original API
-        const res = await fetch('https://api.abcz.workers.dev/api/fitlog');
-        
-        if (!res.ok) {
-          throw new Error('Cloudflare API Rate Limited / Blocked');
-        }
+    if (res.ok) {
+      const data = await res.json();
+      return Array.isArray(data) ? data : data?.workouts || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch workouts from API:', error);
+  }
+  return [];
+};
 
-        const rawData = await res.json();
-        let list: WorkoutItem[] = [];
-        if (Array.isArray(rawData)) list = rawData;
-        else if (Array.isArray(rawData?.data)) list = rawData.data;
-
-        setData(list);
-      } catch (error) {
-        console.warn('Primary API limit reached (Error 1027). Falling back to local data.json');
-        
-        // 2. Secondary Fallback: Local JSON File
-        try {
-          const localRes = await fetch('/data.json');
-          const localData = await localRes.json();
-          setData(localData);
-        } catch (fallbackError) {
-          console.error('Local JSON fetch failed:', fallbackError);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+const LibraryPage = async () => {
+  const workouts = await getWorkouts();
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight font-sans">
-          THE LIBRARY
-        </h2>
-        <p className="text-gray-400 text-xs sm:text-sm mt-1">
-          Twelve lifts covering every major muscle group.
-        </p>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((n) => (
-            <div key={n} className="bg-[#13151b] h-80 rounded-2xl animate-pulse border border-gray-800" />
-          ))}
+    <main className="min-h-screen bg-[#0b0d12] text-white py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header Section */}
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
+            Workout <span className="text-[#ccff00]">Library</span>
+          </h1>
+          <p className="text-gray-400 text-xs sm:text-sm mt-2">
+            Explore our curated collection of professional strength and conditioning workouts.
+          </p>
         </div>
-      ) : !data || data.length === 0 ? (
-        <div className="bg-[#13151b] border border-gray-800 rounded-2xl p-8 text-center text-gray-400">
-          No workouts found.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data.map((item) => (
-            <Link key={item.id} href={`/workouts/${item.id}`} className="block h-full">
-              <div className="bg-[#13151b] border border-gray-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-gray-700 transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer">
-                
-                <div className="relative w-full h-48 sm:h-52 bg-gray-900 overflow-hidden">
-                  <Image
-                    src={item.image || '/banner3.png'}
-                    alt={item.title || 'Workout Image'}
-                    fill
-                    unoptimized
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
 
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap mb-3">
-                      {item.tags && item.tags.map((tag, idx) => (
-                        <span key={idx} className="bg-[#ccff00] text-black text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                          {tag}
-                        </span>
-                      ))}
+        {/* Workouts Grid */}
+        {workouts.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">
+            <p className="text-lg font-semibold">No workouts found or API is temporarily unavailable.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workouts.map((workout) => (
+              <div
+                key={workout.id}
+                className="bg-[#13151b] border border-gray-800/80 rounded-3xl p-4 flex flex-col justify-between transition-transform duration-300 hover:border-[#ccff00]/50 hover:shadow-xl group"
+              >
+                <div>
+                  {/* Workout Image */}
+                  <div className="relative w-full h-48 bg-gray-900 rounded-2xl overflow-hidden mb-4">
+                    <Image
+                      src={workout.image || '/banner3.png'}
+                      alt={workout.title || 'Workout'}
+                      fill
+                      unoptimized
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-[#ccff00]">
+                      ★ {workout.rating || '4.8'}
                     </div>
-
-                    <h3 className="text-white text-base sm:text-lg font-black uppercase tracking-tight line-clamp-1">
-                      {item.title}
-                    </h3>
-
-                    <p className="text-gray-400 text-xs mt-1 font-normal">
-                      {item.equipment}
-                    </p>
                   </div>
 
-                  <div className="flex items-center gap-4 text-gray-400 text-xs font-medium pt-4 mt-5 border-t border-gray-800/60">
-                    <div className="flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="9" strokeWidth="2" />
-                        <path strokeWidth="2" d="M12 7v5l3 2" />
-                      </svg>
-                      <span>{item.time}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 23c-4.97 0-9-4.03-9-9 0-3.32 1.83-6.19 4.5-7.66.36-.2.82.02.87.43.32 2.59 2.11 4.7 4.63 5.23.36.08.68-.2.68-.57V2.5c0-.42.4-.73.81-.62C18.25 2.94 21 6.8 21 11.5c0 6.35-4.03 11.5-9 11.5z" />
-                      </svg>
-                      <span>{item.calories}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                      </svg>
-                      <span>{item.rating}</span>
-                    </div>
+                  {/* Tags */}
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                    {workout.tags && workout.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-[#ccff00]/10 text-[#ccff00] text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
+
+                  {/* Title & Description */}
+                  <h3 className="text-lg font-black uppercase text-white tracking-wide group-hover:text-[#ccff00] transition-colors">
+                    {workout.title}
+                  </h3>
+                  <p className="text-gray-400 text-xs mt-1.5 line-clamp-2 leading-relaxed">
+                    {workout.description}
+                  </p>
                 </div>
 
+                {/* Footer / Action Button */}
+                <div className="mt-6 pt-4 border-t border-gray-800/80 flex items-center justify-between">
+                  <div className="text-[11px] text-gray-400 font-medium">
+                    <span>{workout.time || '30 min'}</span> • <span>{workout.difficulty || 'Intermediate'}</span>
+                  </div>
+                  
+                  <Link
+                    href={`/workouts/${workout.id}`}
+                    className="bg-[#ccff00] hover:bg-[#b3e600] text-black text-xs font-black px-4 py-2 rounded-full uppercase tracking-wider transition-all shadow-lg shadow-[#ccff00]/10"
+                  >
+                    View Details →
+                  </Link>
+                </div>
               </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </section>
+            ))}
+          </div>
+        )}
+
+      </div>
+    </main>
   );
 };
 
